@@ -78,16 +78,7 @@ public class QuoteController {
   public Quote attach(@PathVariable UUID quoteId, @PathVariable UUID sourceId) {
     Quote quote = get(quoteId);
     Source source = sourceRepository.findById(sourceId).get();
-    List<Source> sources = quote.getSources();
-    boolean matchFound = false;
-    for (Source s : sources) {
-      if (s.getId().equals(source.getId())) {
-        matchFound = true;
-        break;
-      }
-    }
-    if (!matchFound) {
-      sources.add(source);
+    if (quote.getSources().add(source)) {
       quoteRepository.save(quote);
     }
     return quote;
@@ -98,16 +89,7 @@ public class QuoteController {
   public void detach(@PathVariable UUID quoteId, @PathVariable UUID sourceId) {
     Quote quote = get(quoteId);
     Source source = sourceRepository.findById(sourceId).get();
-    List<Source> sources = quote.getSources();
-    boolean matchFound = false;
-    for (Source s : sources) {
-      if (s.getId().equals(source.getId())) {
-        matchFound = true;
-        break;
-      }
-    }
-    if (matchFound) {
-      sources.remove(source);
+    if (quote.getSources().remove(source)) {
       quoteRepository.save(quote);
     }
   }
