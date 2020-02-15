@@ -4,11 +4,13 @@ import edu.cnm.deepdive.qod.model.entity.Quote;
 import edu.cnm.deepdive.qod.model.entity.Source;
 import edu.cnm.deepdive.qod.service.QuoteRepository;
 import edu.cnm.deepdive.qod.service.SourceRepository;
+import java.net.URI;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 @RestController
 @RequestMapping("quotes")
@@ -34,8 +37,12 @@ public class QuoteController {
 
   @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE,
       produces = MediaType.APPLICATION_JSON_VALUE)
-  public Quote post(@RequestBody Quote quote) {
-    return quoteRepository.save(quote);
+  public ResponseEntity<Quote> post(@RequestBody Quote quote) {
+    quoteRepository.save(quote);
+    URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+        .path("/{id}")
+        .build(quote.getId());
+    return ResponseEntity.created(location).body(quote);
   }
 
   @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
